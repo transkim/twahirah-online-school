@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 class Subscription extends Model
 {
@@ -12,9 +13,20 @@ class Subscription extends Model
 
     protected $casts = ['starts_at' => 'datetime', 'ends_at' => 'datetime'];
 
-    public function plan(): BelongsTo { return $this->belongsTo(Plan::class); }
-    public function student(): BelongsTo { return $this->belongsTo(User::class, 'student_id'); }
-    public function payment(): BelongsTo { return $this->belongsTo(Payment::class); }
+    public function plan(): BelongsTo
+    {
+        return $this->belongsTo(Plan::class);
+    }
+
+    public function student(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'student_id');
+    }
+
+    public function payment(): BelongsTo
+    {
+        return $this->belongsTo(Payment::class);
+    }
 
     /** Sessions left, or null when the plan has no session limit. */
     public function sessionsLeft(): ?int
@@ -25,7 +37,7 @@ class Subscription extends Model
     /** Usable now: active, inside its dates, and (for session plans) sessions left. */
     public function isUsable(?\DateTimeInterface $at = null): bool
     {
-        $at = $at ? \Illuminate\Support\Carbon::instance($at) : now();
+        $at = $at ? Carbon::instance($at) : now();
 
         return $this->status === 'active'
             && $this->starts_at->lte($at)

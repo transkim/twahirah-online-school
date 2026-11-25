@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Services\Zoom\NullZoomClient;
+use App\Services\Zoom\ZoomClient;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -11,7 +13,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->bind(\App\Services\Zoom\ZoomClient::class, \App\Services\Zoom\NullZoomClient::class);
+        $this->app->bind(ZoomClient::class, NullZoomClient::class);
     }
 
     /**
