@@ -16,6 +16,11 @@ class Course extends Model
         return $this->hasMany(CourseLevel::class)->orderBy('position');
     }
 
+    public function teacherCourses(): HasMany
+    {
+        return $this->hasMany(TeacherCourse::class);
+    }
+
     public function enrolments(): HasMany
     {
         return $this->hasMany(Enrolment::class);

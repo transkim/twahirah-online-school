@@ -72,7 +72,7 @@ class AdminWebsiteTest extends TestCase
         $admin = User::factory()->admin()->create();
 
         foreach (['/admin', '/admin/students', '/admin/students/create', "/admin/students/{$student->id}",
-            '/admin/teachers', "/admin/teachers/{$teacher->id}", '/admin/plans', '/admin/attendance'] as $url) {
+            '/admin/teachers', "/admin/teachers/{$teacher->id}", '/admin/plans', '/admin/attendance', '/admin/courses'] as $url) {
             $this->actingAs($admin)->get($url)->assertOk();
         }
     }
@@ -121,5 +121,27 @@ class AdminWebsiteTest extends TestCase
         $this->actingAs(User::factory()->admin()->create())->put("/admin/plans/{$plan->id}", ['price_ugx' => 2500, 'active' => 1])->assertRedirect();
 
         $this->assertSame(2500, $plan->refresh()->price_ugx);
+    }
+
+    public function test_staff_see_every_portal_menu_section_and_each_opens(): void
+    {
+        $admin = User::factory()->admin()->create();
+
+        $dashboard = $this->actingAs($admin)->get('/admin')->assertOk();
+        foreach (config('navigation.staff') as $item) {
+            $dashboard->assertSee($item['label']);
+            foreach ([$item, ...($item['children'] ?? [])] as $entry) {
+                $url = isset($entry['route']) ? route($entry['route']) : (isset($entry['slug']) ? route('admin.section', $entry['slug']) : null);
+                if ($url !== null) {
+                    $this->actingAs($admin)->get($url)->assertOk()->assertSee($entry['label']);
+                }
+            }
+        }
+    }
+
+    public function test_unknown_sections_are_not_found_and_teachers_cannot_open_staff_sections(): void
+    {
+        $this->actingAs(User::factory()->admin()->create())->get('/admin/section/nothing-here')->assertNotFound();
+        $this->actingAs(User::factory()->teacher()->create())->get('/admin/section/events')->assertForbidden();
     }
 }

@@ -42,6 +42,10 @@ Route::middleware('auth')->group(function () {
         Route::post('/teachers/{teacher}/availability', [Admin\TeacherController::class, 'addAvailability'])->name('teachers.availability.store');
         Route::delete('/teachers/{teacher}/availability/{availability}', [Admin\TeacherController::class, 'removeAvailability'])->name('teachers.availability.destroy');
 
+        Route::get('/courses', [Admin\CourseController::class, 'index'])->name('courses.index');
+
+        Route::get('/section/{slug}', Admin\SectionController::class)->name('section');
+
         Route::get('/plans', [Admin\PlanController::class, 'index'])->name('plans.index');
         Route::put('/plans/{plan}', [Admin\PlanController::class, 'update'])->name('plans.update')->middleware('role:admin');
     });

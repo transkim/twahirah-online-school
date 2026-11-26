@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
+use App\Models\Course;
 use App\Models\Payment;
 use App\Models\Subscription;
 use App\Models\User;
@@ -24,7 +25,9 @@ class DashboardController extends Controller
                 ->where('ends_at', '<', now()->addDays(3))->orderBy('ends_at')->limit(10)->get(),
             'presentToday' => Attendance::where('date', $today)->where('status', 'present')->count(),
             'collectedToday' => Payment::where('status', 'paid')->where('paid_at', '>=', $dayStart)->sum('amount_ugx'),
-            'recentPayments' => Payment::with('student', 'plan')->latest()->limit(10)->get(),
+            'recentPayments' => Payment::with('student', 'plan')->latest()->limit(8)->get(),
+            'busiestCourses' => Course::withCount(['enrolments as active_students' => fn ($query) => $query->where('status', 'active')])
+                ->orderByDesc('active_students')->orderBy('name')->limit(6)->get(),
         ]);
     }
 }
