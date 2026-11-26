@@ -1,13 +1,22 @@
 @extends('layouts.app')
 @section('title', 'Dashboard')
 @section('content')
-<h1>Dashboard</h1>
+@php $hour = (int) now(config('school.timezone'))->format('G'); @endphp
+<div class="row" style="justify-content:space-between;align-items:center;margin-bottom:18px">
+    <h1 style="margin:0">{{ $hour < 12 ? 'Good morning' : ($hour < 17 ? 'Good afternoon' : 'Good evening') }}, {{ strtok(auth()->user()->name, ' ') }}
+        <span class="muted" style="font-size:14px;font-weight:400;margin-left:8px">{{ now(config('school.timezone'))->format('l, j F Y') }}</span></h1>
+    <div class="row">
+        <a class="btn" href="{{ route('admin.students.create') }}">Add student</a>
+        <a class="btn light" href="{{ route('admin.attendance') }}">Mark register</a>
+        <a class="btn light" href="{{ route('admin.students.index') }}">Record a payment</a>
+    </div>
+</div>
 <div class="grid">
-    <div class="card stat"><b>{{ number_format($students) }}</b><span>active students</span></div>
-    <div class="card stat"><b>{{ number_format($subscribed) }}</b><span>with a subscription now</span></div>
-    <div class="card stat"><b>{{ number_format($presentToday) }}</b><span>marked present today</span></div>
-    <div class="card stat"><b>UGX {{ number_format($collectedToday) }}</b><span>collected today</span></div>
-    <div class="card stat"><b>{{ number_format($teachers) }}</b><span>teachers</span></div>
+    <div class="card stat"><span>Collected today</span><b>UGX {{ number_format($collectedToday) }}</b></div>
+    <div class="card stat orange"><span>Present today</span><b>{{ number_format($presentToday) }}</b></div>
+    <div class="card stat purple"><span>Subscribed now</span><b>{{ number_format($subscribed) }}</b></div>
+    <div class="card stat slate"><span>Active students</span><b>{{ number_format($students) }}</b></div>
+    <div class="card stat red"><span>Teachers</span><b>{{ number_format($teachers) }}</b></div>
 </div>
 <div class="card">
     <h2>Subscriptions ending in the next 3 days</h2>
