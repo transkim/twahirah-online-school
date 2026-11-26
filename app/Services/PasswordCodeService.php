@@ -28,12 +28,14 @@ class PasswordCodeService
     public function accountsFor(string $login): Collection
     {
         $login = trim($login);
+        $lower = mb_strtolower($login);
 
+        // Usernames, emails and student numbers match whatever the capital letters, so "Akram" finds "akram".
         return User::where('active', true)
             ->where(fn ($query) => $query
-                ->where('student_number', $login)
-                ->orWhere('username', $login)
-                ->orWhere('email', $login)
+                ->whereRaw('lower(student_number) = ?', [$lower])
+                ->orWhereRaw('lower(username) = ?', [$lower])
+                ->orWhereRaw('lower(email) = ?', [$lower])
                 ->orWhereIn('phone', $this->phoneVariants($login)))
             ->get();
     }

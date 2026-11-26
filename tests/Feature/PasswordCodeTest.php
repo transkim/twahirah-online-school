@@ -103,4 +103,13 @@ class PasswordCodeTest extends TestCase
 
         $this->assertAuthenticatedAs($sister);
     }
+
+    public function test_usernames_match_whatever_the_capital_letters(): void
+    {
+        $admin = User::factory()->admin()->create(['username' => 'akram', 'password' => 'admin-pass-1']);
+
+        $this->post('/login', ['login' => 'Akram', 'password' => 'admin-pass-1'])->assertRedirect(route('admin.dashboard'));
+
+        $this->assertAuthenticatedAs($admin);
+    }
 }
