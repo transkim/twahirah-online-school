@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\PasswordCodeController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 
@@ -10,6 +11,12 @@ Route::redirect('/', '/home');
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'show'])->name('login');
     Route::post('/login', [LoginController::class, 'store'])->name('login.store');
+
+    // First sign-in or forgotten password: a code by SMS, then a new password.
+    Route::get('/password/code', [PasswordCodeController::class, 'create'])->name('password.code');
+    Route::post('/password/code', [PasswordCodeController::class, 'store'])->name('password.code.send');
+    Route::get('/password/code/verify', [PasswordCodeController::class, 'edit'])->name('password.code.verify');
+    Route::post('/password/code/verify', [PasswordCodeController::class, 'update'])->name('password.code.update');
 });
 
 Route::middleware('auth')->group(function () {

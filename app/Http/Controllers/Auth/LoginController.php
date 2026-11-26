@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Services\AttendanceService;
+use App\Services\PasswordCodeService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
@@ -20,10 +22,10 @@ class LoginController extends Controller
     }
 
     /**
-     * Sign in with a username, phone number or email, plus a password.
+     * Sign in with a username, phone number, student number or email, plus a password.
      * A student who signs in is marked present for today's chat classes.
      */
-    public function store(Request $request, AttendanceService $attendance): RedirectResponse
+    public function store(Request $request, AttendanceService $attendance, PasswordCodeService $codes): RedirectResponse
     {
         $data = $request->validate([
             'login' => ['required', 'string', 'max:191'],
@@ -37,12 +39,11 @@ class LoginController extends Controller
             ]);
         }
 
-        $user = User::where('username', $data['login'])
-            ->orWhere('phone', $data['login'])
-            ->orWhere('email', $data['login'])
-            ->first();
+        // A few phone numbers are shared by family members, so try each account that matches.
+        $user = $codes->accountsFor($data['login'])
+            ->first(fn (User $candidate): bool => Hash::check($data['password'], $candidate->password));
 
-        if (! $user || ! $user->active || ! Auth::attempt(['id' => $user->id, 'password' => $data['password']], $request->boolean('remember'))) {
+        if (! $user || ! Auth::attempt(['id' => $user->id, 'password' => $data['password']], $request->boolean('remember'))) {
             RateLimiter::hit($key, 60);
 
             throw ValidationException::withMessages(['login' => 'The username or password is not correct.']);
