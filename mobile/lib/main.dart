@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -159,6 +161,41 @@ class _SchoolScreenState extends State<SchoolScreen> {
   late final WebViewController _web;
   int _progress = 0;
   bool _failed = false;
+  bool _waking = false;
+  int _tries = 0;
+  String _lastError = '';
+  Timer? _retry;
+
+  /// The free test server sleeps when nobody uses it and takes up to a minute to wake,
+  /// so the app keeps trying for about two minutes before it says it cannot reach the school.
+  static const int maxTries = 24;
+
+  void _handleFailure(String description) {
+    _lastError = description;
+    if (_tries < maxTries) {
+      _tries++;
+      setState(() => _waking = true);
+      _retry?.cancel();
+      _retry = Timer(const Duration(seconds: 5), () => _web.loadRequest(Uri.parse('${widget.schoolUrl}/home')));
+    } else {
+      setState(() {
+        _waking = false;
+        _failed = true;
+      });
+    }
+  }
+
+  void _tryAgain() {
+    _tries = 0;
+    setState(() => _failed = false);
+    _web.loadRequest(Uri.parse('${widget.schoolUrl}/home'));
+  }
+
+  @override
+  void dispose() {
+    _retry?.cancel();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -169,10 +206,21 @@ class _SchoolScreenState extends State<SchoolScreen> {
       ..setBackgroundColor(const Color(0xFFECEEF1))
       ..setNavigationDelegate(NavigationDelegate(
         onProgress: (value) => setState(() => _progress = value),
-        onPageStarted: (_) => setState(() => _failed = false),
+        onPageFinished: (_) {
+          if (_waking && _retry?.isActive != true) {
+            setState(() => _waking = false);
+          }
+        },
         onWebResourceError: (error) {
-          if (error.isForMainFrame ?? true) {
-            setState(() => _failed = true);
+          if (error.isForMainFrame == true) {
+            _handleFailure('${error.errorCode} ${error.description}');
+          }
+        },
+        onHttpError: (error) {
+          final status = error.response?.statusCode ?? 0;
+          // Render answers 502 or 503 for a moment while the server is starting.
+          if (status >= 502 && status <= 504 && error.request?.uri.host == host) {
+            _handleFailure('HTTP $status');
           }
         },
         onNavigationRequest: (request) =>
@@ -201,7 +249,8 @@ class _SchoolScreenState extends State<SchoolScreen> {
         backgroundColor: green,
         body: SafeArea(
           child: _failed
-              ? _OfflineView(address: widget.schoolUrl, onRetry: () => _web.reload(), onChangeAddress: _changeAddress)
+              ? _OfflineView(
+                  address: widget.schoolUrl, detail: _lastError, onRetry: _tryAgain, onChangeAddress: _changeAddress)
               : Stack(children: [
                   RefreshIndicator(
                     onRefresh: () => _web.reload(),
@@ -209,6 +258,7 @@ class _SchoolScreenState extends State<SchoolScreen> {
                   ),
                   if (_progress < 100)
                     LinearProgressIndicator(value: _progress / 100, color: orange, backgroundColor: Colors.transparent),
+                  if (_waking) const _WakingView(),
                 ]),
         ),
       ),
@@ -216,10 +266,38 @@ class _SchoolScreenState extends State<SchoolScreen> {
   }
 }
 
+class _WakingView extends StatelessWidget {
+  const _WakingView();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Colors.white,
+      alignment: Alignment.center,
+      padding: const EdgeInsets.all(28),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Image.asset('assets/icon.png', height: 110),
+          const SizedBox(height: 24),
+          const CircularProgressIndicator(color: orange),
+          const SizedBox(height: 20),
+          const Text('Opening the school...', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+          const SizedBox(height: 8),
+          const Text('This can take up to a minute the first time.',
+              textAlign: TextAlign.center, style: TextStyle(color: Colors.black54)),
+        ],
+      ),
+    );
+  }
+}
+
 class _OfflineView extends StatelessWidget {
-  const _OfflineView({required this.address, required this.onRetry, required this.onChangeAddress});
+  const _OfflineView(
+      {required this.address, required this.detail, required this.onRetry, required this.onChangeAddress});
 
   final String address;
+  final String detail;
   final VoidCallback onRetry;
   final VoidCallback onChangeAddress;
 
@@ -239,6 +317,10 @@ class _OfflineView extends StatelessWidget {
           const SizedBox(height: 8),
           Text('Check your internet connection. The app is trying to open $address',
               textAlign: TextAlign.center, style: const TextStyle(color: Colors.black54)),
+          if (detail.isNotEmpty) ...[
+            const SizedBox(height: 6),
+            Text(detail, textAlign: TextAlign.center, style: const TextStyle(color: Colors.black38, fontSize: 12)),
+          ],
           const SizedBox(height: 24),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: orange, minimumSize: const Size.fromHeight(48)),

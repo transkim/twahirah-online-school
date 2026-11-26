@@ -57,6 +57,7 @@ jobs:
               s = s.replace('<application', '<application\n        android:usesCleartextTraffic="true"', 1)
           open(p, 'w').write(s)
           PY
+          cat android/app/src/main/AndroidManifest.xml
 
       - name: Get packages and make the app icon
         run: |
