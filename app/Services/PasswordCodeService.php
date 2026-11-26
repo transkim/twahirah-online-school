@@ -72,7 +72,7 @@ class PasswordCodeService
         return false;
     }
 
-    /** "0752084475" is shown as "07•• ••• 475". */
+    /** "0700123456" is shown as "07•• ••• 456". */
     public function maskedPhone(?string $phone): string
     {
         $digits = preg_replace('/\D/', '', (string) $phone);
@@ -81,7 +81,7 @@ class PasswordCodeService
     }
 
     /**
-     * The same Ugandan number can be stored as 0752084475, 256752084475 or +256752084475.
+     * The same Ugandan number can be stored as 0700123456, 256752084475 or +256752084475.
      *
      * @return list<string>
      */

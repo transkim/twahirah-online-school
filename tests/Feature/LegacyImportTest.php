@@ -25,15 +25,15 @@ class LegacyImportTest extends TestCase
         $this->folder = sys_get_temp_dir().'/legacy-import-'.uniqid();
         File::ensureDirectoryExists($this->folder);
         File::put($this->folder.'/teachers.json', json_encode(['teachers' => [
-            ['id' => '11', 'title' => 'SHK', 'first_name' => 'HALIIMAH', 'last_name' => 'NASSOZI', 'phone' => '0700000011', 'email' => '', 'gender' => 'Female', 'is_deleted' => '0',
+            ['id' => '11', 'title' => 'SHK', 'first_name' => 'AMINA', 'last_name' => 'TEACHER', 'phone' => '0700000011', 'email' => '', 'gender' => 'Female', 'is_deleted' => '0',
                 'courses' => [['name' => 'YASSARNA AL QURAN', 'mode' => 'WHATSAPP']]],
         ]]));
         File::put($this->folder.'/students.json', json_encode([
-            ['SID' => '7530', 'student_no' => 'T/26/7530', 'name' => 'LUNJA  LUKIA', 'phone' => '0752 084 475', 'gender' => 'female', 'admission_date' => '2026-11-24', 'courses' => [
-                ['course' => 'YASSARNA AL QURAN', 'mode' => 'WHATSAPP', 'status' => 1, 'level' => null, 'teacher' => 'Nassozi  Haliimah', 'seen' => '2026-11-25', 'balance' => -40000, 'when' => '', 'days' => 'Mon, Tue, Wed'],
+            ['SID' => '9001', 'student_no' => 'T/26/0001', 'name' => 'TEST  STUDENT', 'phone' => '0700 123 456', 'gender' => 'female', 'admission_date' => '2026-11-24', 'courses' => [
+                ['course' => 'YASSARNA AL QURAN', 'mode' => 'WHATSAPP', 'status' => 1, 'level' => null, 'teacher' => 'Teacher  Amina', 'seen' => '2026-11-25', 'balance' => -40000, 'when' => '', 'days' => 'Mon, Tue, Wed'],
                 ['course' => 'QURAN', 'mode' => 'ZOOM', 'status' => 2, 'level' => null, 'teacher' => 'Someone Gone', 'seen' => '2025-05-06', 'balance' => 15000, 'when' => '2026-11-19', 'days' => ''],
             ]],
-            ['SID' => '5507', 'student_no' => 'T/24/5507', 'name' => 'Old Student', 'phone' => '0740723226', 'gender' => 'female', 'admission_date' => '2024-01-10', 'courses' => [
+            ['SID' => '9002', 'student_no' => 'T/24/9002', 'name' => 'Old Student', 'phone' => '0700000002', 'gender' => 'female', 'admission_date' => '2024-01-10', 'courses' => [
                 ['course' => 'SWALAH', 'mode' => 'WHATSAPP', 'status' => 3, 'level' => null, 'teacher' => '', 'seen' => '', 'balance' => 0, 'when' => '', 'days' => ''],
                 ['course' => 'UNKNOWN COURSE', 'mode' => 'WHATSAPP', 'status' => 1, 'level' => null, 'teacher' => '', 'seen' => '', 'balance' => 0, 'when' => '', 'days' => ''],
             ]],
@@ -51,11 +51,11 @@ class LegacyImportTest extends TestCase
         $this->artisan('school:import-legacy', ['folder' => $this->folder])->assertSuccessful();
 
         $teacher = User::where('role', 'teacher')->where('legacy_id', 11)->sole();
-        $this->assertSame('Haliimah Nassozi', $teacher->name);
+        $this->assertSame('Amina Teacher', $teacher->name);
         $this->assertTrue($teacher->teacherCourses()->exists());
 
-        $student = User::where('legacy_id', 7530)->sole();
-        $this->assertSame(['Lunja Lukia', 'T/26/7530', '0752084475', 'female', true], [$student->name, $student->student_number, $student->phone, $student->gender, $student->active]);
+        $student = User::where('legacy_id', 9001)->sole();
+        $this->assertSame(['Test Student', 'T/26/0001', '0700123456', 'female', true], [$student->name, $student->student_number, $student->phone, $student->gender, $student->active]);
 
         $studying = Enrolment::where('student_id', $student->id)->where('status', 'active')->sole();
         $this->assertSame([$teacher->id, 3, -40000], [$studying->teacher_id, $studying->days_per_week, $studying->legacy_balance_ugx]);
@@ -64,7 +64,7 @@ class LegacyImportTest extends TestCase
         $stopped = Enrolment::where('student_id', $student->id)->where('status', 'cancelled')->sole();
         $this->assertSame(['2026-11-19', null, 15000], [$stopped->ended_on, $stopped->teacher_id, $stopped->legacy_balance_ugx]);
 
-        $old = User::where('legacy_id', 5507)->sole();
+        $old = User::where('legacy_id', 9002)->sole();
         $this->assertFalse($old->active);
         $this->assertSame(1, Enrolment::where('student_id', $old->id)->count());
     }
@@ -73,7 +73,7 @@ class LegacyImportTest extends TestCase
     {
         $this->artisan('school:import-legacy', ['folder' => $this->folder])->assertSuccessful();
 
-        $this->post('/login', ['login' => '0752084475', 'password' => 'password'])->assertSessionHasErrors('login');
+        $this->post('/login', ['login' => '0700123456', 'password' => 'password'])->assertSessionHasErrors('login');
         $this->assertGuest();
     }
 

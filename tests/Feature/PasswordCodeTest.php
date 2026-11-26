@@ -39,26 +39,26 @@ class PasswordCodeTest extends TestCase
 
     public function test_a_student_gets_a_code_by_sms_and_sets_their_password(): void
     {
-        $student = User::factory()->create(['phone' => '0752084475', 'student_number' => 'T/26/7530']);
+        $student = User::factory()->create(['phone' => '0700123456', 'student_number' => 'T/26/0001']);
 
-        $this->post('/password/code', ['login' => '+256 752 084 475'])
+        $this->post('/password/code', ['login' => '+256 700 123 456'])
             ->assertRedirect(route('password.code.verify'))
-            ->assertSessionHas('status', 'We sent a 6-digit code by SMS to 07•• ••• 475.');
-        $this->assertSame('256752084475', $this->sent[0]['phone']);
+            ->assertSessionHas('status', 'We sent a 6-digit code by SMS to 07•• ••• 456.');
+        $this->assertSame('256700123456', $this->sent[0]['phone']);
 
         $this->post('/password/code/verify', ['code' => $this->lastCode(), 'password' => 'new-secret-1', 'password_confirmation' => 'new-secret-1'])
             ->assertRedirect(route('home'));
         $this->assertAuthenticatedAs($student);
 
         $this->post('/logout');
-        $this->post('/login', ['login' => 'T/26/7530', 'password' => 'new-secret-1'])->assertRedirect(route('home'));
+        $this->post('/login', ['login' => 'T/26/0001', 'password' => 'new-secret-1'])->assertRedirect(route('home'));
         $this->assertAuthenticatedAs($student);
     }
 
     public function test_a_code_stops_working_after_five_wrong_tries(): void
     {
-        $student = User::factory()->create(['phone' => '0752084475']);
-        $this->post('/password/code', ['login' => '0752084475']);
+        $student = User::factory()->create(['phone' => '0700123456']);
+        $this->post('/password/code', ['login' => '0700123456']);
         $code = $this->lastCode();
         $wrong = $code === '111111' ? '222222' : '111111';
 
