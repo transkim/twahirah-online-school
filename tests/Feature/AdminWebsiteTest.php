@@ -144,4 +144,11 @@ class AdminWebsiteTest extends TestCase
         $this->actingAs(User::factory()->admin()->create())->get('/admin/section/nothing-here')->assertNotFound();
         $this->actingAs(User::factory()->teacher()->create())->get('/admin/section/events')->assertForbidden();
     }
+
+    public function test_pages_behind_an_https_proxy_link_images_over_https(): void
+    {
+        $this->get('/login', ['X-Forwarded-Proto' => 'https', 'X-Forwarded-Host' => 'school.test', 'X-Forwarded-Port' => '443'])
+            ->assertOk()
+            ->assertSee('https://school.test/images/logo.png', false);
+    }
 }
