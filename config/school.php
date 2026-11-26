@@ -13,4 +13,11 @@ return [
     // Live Zoom classes.
     'class_minutes' => (int) env('SCHOOL_CLASS_MINUTES', 60),
     'group_size' => (int) env('SCHOOL_GROUP_SIZE', 5), // to be confirmed by Sheikh
+
+    // The old school portal, read once to bring its students and teachers across.
+    'legacy_portal' => [
+        'url' => env('LEGACY_PORTAL_URL', 'https://school.twahirahdbms.com'),
+        'username' => env('LEGACY_PORTAL_USERNAME'),
+        'password' => env('LEGACY_PORTAL_PASSWORD'),
+    ],
 ];

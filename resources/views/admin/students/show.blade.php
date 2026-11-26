@@ -8,13 +8,15 @@
 <div class="card">
     <h2>Courses</h2>
     <table>
-        <tr><th>Course</th><th>Level</th><th>Teacher</th><th>Days a week</th><th>Change teacher</th></tr>
+        <tr><th>Course</th><th>Status</th><th>Level</th><th>Teacher</th><th>Days a week</th><th>Old balance</th><th>Change teacher</th></tr>
         @forelse ($student->enrolments as $e)
             <tr>
                 <td>{{ $e->course->name }} <span class="muted">({{ $e->course->mode }})</span></td>
+                <td><span @class(['pill', 'ok' => $e->status === 'active'])>{{ $e->status === 'active' ? 'studying' : $e->status }}</span>@if ($e->ended_on) <span class="muted">{{ \Illuminate\Support\Carbon::parse($e->ended_on)->format('j M Y') }}</span>@endif</td>
                 <td>{{ $e->level?->name }}</td>
                 <td>{{ $e->teacher?->name ?? 'Not assigned' }}</td>
                 <td>{{ $e->days_per_week ?? '—' }}</td>
+                <td>@if ($e->legacy_balance_ugx < 0)<span class="bad">UGX {{ number_format(-$e->legacy_balance_ugx) }} owing</span>@elseif ($e->legacy_balance_ugx > 0)<span class="muted">UGX {{ number_format($e->legacy_balance_ugx) }} credit</span>@else<span class="muted">—</span>@endif</td>
                 <td>
                     <form class="row" method="post" action="{{ route('admin.students.teacher', [$student, $e]) }}">@csrf
                         <select name="teacher_id">@foreach ($teachers as $t)<option value="{{ $t->id }}" @selected($t->id === $e->teacher_id)>{{ $t->name }}</option>@endforeach</select>
@@ -23,7 +25,7 @@
                 </td>
             </tr>
         @empty
-            <tr><td colspan="5" class="muted">Not on any course yet.</td></tr>
+            <tr><td colspan="7" class="muted">Not on any course yet.</td></tr>
         @endforelse
     </table>
     <form class="row" method="post" action="{{ route('admin.students.enrol', $student) }}" style="margin-top:12px">@csrf
