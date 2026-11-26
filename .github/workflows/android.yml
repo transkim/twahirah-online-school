@@ -67,7 +67,7 @@ jobs:
         run: flutter analyze --no-fatal-infos
 
       - name: Build the APK
-        run: flutter build apk --release --dart-define=SCHOOL_URL=${{ vars.SCHOOL_URL }}
+        run: flutter build apk --release --dart-define=SCHOOL_URL=${{ vars.SCHOOL_URL || 'https://twahirah-online-school.onrender.com' }}
 
       - name: Name the APK
         run: cp build/app/outputs/flutter-apk/app-release.apk build/twahirah-online-school.apk
