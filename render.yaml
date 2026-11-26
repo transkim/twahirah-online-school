@@ -35,6 +35,12 @@ services:
         sync: false
       - key: ADMIN_PASSWORD
         sync: false
+      # Test copy: made-up students and teachers only. Turn off before real data goes online.
+      - key: DEMO_DATA
+        value: "true"
+      # Password for the sample sign-ins teacher.demo and student.demo.
+      - key: DEMO_PASSWORD
+        sync: false
 
 databases:
   - name: twahirah-db
