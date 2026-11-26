@@ -42,7 +42,7 @@ class PasswordCodeController extends Controller
         $accounts = $this->codes->accountsFor($data['login']);
         if ($accounts->count() > 1) {
             throw ValidationException::withMessages([
-                'login' => 'This phone number is used by more than one student. Please enter your student number instead, for example T/26/7530.',
+                'login' => 'This phone number is used by more than one student. Please enter your student number instead, for example T/26/0001.',
             ]);
         }
 
