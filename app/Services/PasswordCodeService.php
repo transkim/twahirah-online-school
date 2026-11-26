@@ -81,7 +81,7 @@ class PasswordCodeService
     }
 
     /**
-     * The same Ugandan number can be stored as 0700123456, 256752084475 or +256752084475.
+     * The same Ugandan number can be stored as 0700123456, 256700123456 or +256700123456.
      *
      * @return list<string>
      */
