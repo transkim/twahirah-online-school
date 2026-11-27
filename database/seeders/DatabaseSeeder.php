@@ -19,5 +19,10 @@ class DatabaseSeeder extends Seeder
                 'password' => $password,
             ]);
         }
+
+        // Made-up students and teachers for the online test copy. Never set this where real data lives.
+        if (filter_var(env('DEMO_DATA', false), FILTER_VALIDATE_BOOLEAN)) {
+            $this->call(DemoSeeder::class);
+        }
     }
 }

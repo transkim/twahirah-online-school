@@ -1,0 +1,53 @@
+name: Docker
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  image:
+    runs-on: ubuntu-latest
+    name: Build and start the hosting image
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: school
+          POSTGRES_PASSWORD: school
+          POSTGRES_DB: school
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Build image
+        run: docker build -t twahirah-online-school .
+
+      - name: Start the app against Postgres
+        run: |
+          docker run -d --name app --network host \
+            -e PORT=8080 -e APP_ENV=production -e APP_DEBUG=false \
+            -e APP_KEY="$(openssl rand -base64 32)" \
+            -e DB_CONNECTION=pgsql -e DB_URL=postgresql://school:school@127.0.0.1:5432/school \
+            -e SESSION_DRIVER=database -e CACHE_STORE=database -e LOG_CHANNEL=stderr \
+            -e ADMIN_NAME="Test Admin" -e ADMIN_USERNAME=ciadmin -e ADMIN_PASSWORD=ci-password-123 \
+            twahirah-online-school
+          for i in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:8080/up >/dev/null; then break; fi
+            sleep 2
+          done
+          docker logs app
+          curl -fsS http://127.0.0.1:8080/login | grep -q "Sign in"
+          docker exec app php artisan tinker --execute 'echo App\Models\Plan::count()." plans ".App\Models\User::where("username","ciadmin")->count()." admin";'

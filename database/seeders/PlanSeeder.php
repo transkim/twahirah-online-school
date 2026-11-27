@@ -5,7 +5,10 @@ namespace Database\Seeders;
 use App\Models\Plan;
 use Illuminate\Database\Seeder;
 
-/** Prices set by Sheikh Akram on 25 Nov 2026, in UGX. */
+/**
+ * Prices set by Sheikh Akram on 25 Nov 2026, in UGX.
+ * Only missing plans are added, so prices changed later on the Plans page are kept when this runs again.
+ */
 class PlanSeeder extends Seeder
 {
     public function run(): void
@@ -15,7 +18,7 @@ class PlanSeeder extends Seeder
             ['day', 1, 2000], ['week', 7, 10000], ['month', 30, 40000], ['year_12m', 365, 420000],
         ];
         foreach ($chat as [$cycle, $days, $price]) {
-            Plan::updateOrCreate(
+            Plan::firstOrCreate(
                 ['mode' => 'chat', 'days_per_week' => null, 'cycle' => $cycle],
                 ['name' => 'Chat classes · '.self::label($cycle), 'duration_days' => $days, 'sessions' => null, 'price_ugx' => $price],
             );
@@ -29,7 +32,7 @@ class PlanSeeder extends Seeder
         ];
         foreach ($zoom as $daysPerWeek => $rows) {
             foreach ($rows as [$cycle, $days, $sessions, $price]) {
-                Plan::updateOrCreate(
+                Plan::firstOrCreate(
                     ['mode' => 'zoom', 'days_per_week' => $daysPerWeek, 'cycle' => $cycle],
                     ['name' => "Zoom {$daysPerWeek} days a week · ".self::label($cycle), 'duration_days' => $days, 'sessions' => $sessions, 'price_ugx' => $price],
                 );

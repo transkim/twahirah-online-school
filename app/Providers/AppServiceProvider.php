@@ -2,6 +2,13 @@
 
 namespace App\Providers;
 
+use App\Services\Payments\OfficePaymentGateway;
+use App\Services\Payments\PaymentGateway;
+use App\Services\SchoolSettings;
+use App\Services\Sms\LogSmsSender;
+use App\Services\Sms\SmsSender;
+use App\Services\Zoom\NullZoomClient;
+use App\Services\Zoom\ZoomClient;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -11,14 +18,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->bind(\App\Services\Zoom\ZoomClient::class, \App\Services\Zoom\NullZoomClient::class);
+        $this->app->bind(ZoomClient::class, NullZoomClient::class);
+        $this->app->bind(SmsSender::class, LogSmsSender::class);
+        $this->app->bind(PaymentGateway::class, OfficePaymentGateway::class);
     }
 
     /**
      * Bootstrap any application services.
      */
-    public function boot(): void
+    public function boot(SchoolSettings $settings): void
     {
-        //
+        $settings->apply();
     }
 }

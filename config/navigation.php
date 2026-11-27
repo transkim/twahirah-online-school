@@ -1,0 +1,166 @@
+<?php
+
+/*
+|--------------------------------------------------------------------------
+| Staff side menu
+|--------------------------------------------------------------------------
+|
+| Mirrors the menu of the old school portal so staff find everything where
+| they expect it. An item with a "route" opens a working page. An item with
+| a "slug" opens a "coming soon" page that explains what the section will do.
+|
+*/
+
+return [
+    'staff' => [
+        ['label' => 'Dashboard', 'icon' => 'dashboard', 'route' => 'admin.dashboard'],
+        ['label' => 'Calendar', 'icon' => 'calendar', 'route' => 'admin.calendar', 'badge' => 'classes_today'],
+        ['label' => 'Courses & Marks', 'icon' => 'courses', 'children' => [
+            ['label' => 'Course Lists', 'route' => 'admin.courses.index'],
+            ['label' => 'Exams', 'route' => 'exams.index'],
+            ['label' => 'Marks', 'route' => 'marks.index'],
+            ['label' => 'Lesson Library', 'route' => 'lessons.index'],
+            ['label' => 'Homework', 'route' => 'homework.index'],
+            ['label' => 'Levels & Topics', 'route' => 'admin.levels',
+                'about' => 'The levels of each course and the topics taught at each level.',
+                'features' => ['Topics in order, with lesson notes, audio and video', 'Students move up a level when they pass']],
+            ['label' => 'Grading Settings', 'route' => 'admin.grading'],
+            ['label' => 'Student Levels', 'route' => 'admin.student-levels',
+                'about' => 'The level each student is at in each course, and their progress.',
+                'features' => ['Promote students one by one or in a group', 'History of every level change']],
+        ]],
+        ['label' => 'Teachers', 'icon' => 'teachers', 'children' => [
+            ['label' => 'Teachers', 'route' => 'admin.teachers.index'],
+            ['label' => 'Appraisals', 'route' => 'admin.appraisals',
+                'about' => 'Reviews of each teacher, built from attendance, student feedback and results.',
+                'features' => ['Classes held and missed', 'Student ratings and comments', 'Notes from the office']],
+        ]],
+        ['label' => 'Staff Mgt', 'icon' => 'staff', 'children' => [
+            ['label' => 'Members', 'route' => 'admin.staff.members',
+                'about' => 'Everyone who works for the center, with their contacts and roles.',
+                'features' => ['Staff profiles and documents', 'Which department each person belongs to']],
+            ['label' => 'System Users', 'route' => 'admin.users.index', 'admin_only' => true],
+        ]],
+        ['label' => 'Events', 'icon' => 'events', 'route' => 'admin.events.index'],
+        ['label' => 'Department', 'icon' => 'department', 'children' => [
+            ['label' => 'Roles', 'route' => 'admin.staff.roles',
+                'about' => 'The roles staff can have, and what each role can see and change.',
+                'features' => ['Administrator, finance, teacher and office roles', 'Fine-grained permissions per section']],
+            ['label' => 'Departments', 'route' => 'admin.staff.departments',
+                'about' => 'The departments of the center and who leads each one.'],
+        ]],
+        ['label' => 'Finance', 'icon' => 'finance', 'children' => [
+            ['label' => 'Subscription Plans', 'route' => 'admin.plans.index'],
+            ['label' => 'Registration Fees', 'route' => 'admin.finance.registration-fees',
+                'about' => 'One-off fees paid when a student first joins.'],
+            ['label' => 'Course Fees', 'route' => 'admin.reports.balances',
+                'about' => 'Fees and old balances carried over from the old portal, now paid through subscriptions.',
+                'features' => ['Old balances shown on each student', 'Payments by Mobile Money (MTN, Airtel) or card']],
+            ['label' => 'Daawah', 'route' => 'admin.finance.daawah',
+                'about' => 'Money received and spent for daawah work.'],
+            ['label' => 'Certificate Fees', 'route' => 'admin.finance.certificate-fees',
+                'about' => 'Fees for certificates when students complete a course or level.'],
+            ['label' => 'Accounts', 'route' => 'admin.finance.accounts',
+                'about' => 'The account types money is recorded under, such as income and expenses.'],
+            ['label' => 'Sub-accounts', 'route' => 'admin.finance.accounts',
+                'about' => 'Smaller accounts inside each account, for clearer reports.'],
+            ['label' => 'Requisitions', 'route' => 'requisitions.index',
+                'about' => 'Requests to spend money, with approval by the office.',
+                'features' => ['Request, approve and pay out', 'Every step recorded in the system logs']],
+            ['label' => 'Fee Discounts', 'route' => 'admin.finance.discounts',
+                'about' => 'Discounts for particular students, families or groups.'],
+            ['label' => 'Monthly Billing', 'route' => 'admin.plans.index'],
+        ]],
+        ['label' => 'Students', 'icon' => 'students', 'children' => [
+            ['label' => 'Continuing', 'route' => 'admin.students.index'],
+            ['label' => 'Add Student', 'route' => 'admin.students.create'],
+            ['label' => 'Attendance', 'route' => 'admin.attendance'],
+            ['label' => 'Graduates', 'route' => 'admin.graduates',
+                'about' => 'Students who have completed a course, with their certificates.'],
+            ['label' => 'Self-registered', 'route' => 'admin.self-registered',
+                'about' => 'Students who signed up themselves in the app and are waiting to be checked.',
+                'features' => ['Approve, merge with an existing record or reject']],
+            ['label' => 'Feedback', 'route' => 'feedback.index',
+                'about' => 'What students say about their classes and teachers.'],
+            ['label' => 'Cancelled Enrolments', 'route' => 'admin.reports.cancelled'],
+            ['label' => 'Student Insights', 'route' => 'admin.reports.insights'],
+            ['label' => 'Free Student Numbers', 'route' => 'admin.free-numbers',
+                'about' => 'Student numbers that are not in use and can be given out again.'],
+        ]],
+        ['label' => 'Communication', 'icon' => 'communication', 'children' => [
+            ['label' => 'Chat & Groups', 'route' => 'chat.index'],
+            ['label' => 'Announcements', 'route' => 'announcements.index'],
+            ['label' => 'SMS Broadcasts', 'route' => 'announcements.index'],
+            ['label' => 'Email Notifications', 'slug' => 'email-notifications',
+                'about' => 'Emails the system sends, such as receipts and reminders.'],
+            ['label' => 'Automatic Messages', 'route' => 'admin.automatic-messages',
+                'about' => 'Messages sent on their own, such as "your subscription ends tomorrow".'],
+        ]],
+        ['label' => 'System Logs', 'icon' => 'logs', 'route' => 'admin.logs', 'admin_only' => true],
+        ['label' => 'Reports', 'icon' => 'reports', 'children' => [
+            ['label' => 'Fees Balances', 'route' => 'admin.reports.balances'],
+            ['label' => 'Collections', 'route' => 'admin.payments.index'],
+            ['label' => 'Teachers', 'route' => 'admin.reports.teachers'],
+            ['label' => 'Account Statement', 'route' => 'admin.reports.statement'],
+            ['label' => 'Financial Statements', 'route' => 'admin.finance.statements',
+                'about' => 'Income and spending for the center over any period.'],
+        ]],
+        ['label' => 'Work Plans', 'icon' => 'workplans', 'route' => 'work-plans.index',
+            'about' => 'What each teacher plans to cover each week, and what was done.'],
+        ['label' => 'Leave Management', 'icon' => 'leave', 'route' => 'leave.index'],
+        ['label' => 'System Settings', 'icon' => 'settings', 'route' => 'admin.settings', 'admin_only' => true],
+    ],
+
+    /*
+     * Simple menus for teachers and students.
+     */
+    'teacher' => [
+        ['label' => 'Home', 'icon' => 'dashboard', 'route' => 'home'],
+        ['label' => 'Live classes', 'icon' => 'calendar', 'route' => 'teach.classes'],
+        ['label' => 'Lessons', 'icon' => 'courses', 'route' => 'lessons.index'],
+        ['label' => 'Homework', 'icon' => 'workplans', 'route' => 'homework.index'],
+        ['label' => 'Exams', 'icon' => 'reports', 'route' => 'exams.index'],
+        ['label' => 'Marks', 'icon' => 'teachers', 'route' => 'marks.index'],
+        ['label' => 'Chat', 'icon' => 'communication', 'route' => 'chat.index'],
+        ['label' => 'Announcements', 'icon' => 'events', 'route' => 'announcements.index'],
+        ['label' => 'Attendance', 'icon' => 'students', 'route' => 'admin.attendance'],
+        ['label' => 'Leave', 'icon' => 'leave', 'route' => 'leave.index'],
+        ['label' => 'Work plans', 'icon' => 'workplans', 'route' => 'work-plans.index'],
+        ['label' => 'Requisitions', 'icon' => 'finance', 'route' => 'requisitions.index'],
+        ['label' => 'Feedback', 'icon' => 'communication', 'route' => 'feedback.index'],
+        ['label' => 'Change password', 'icon' => 'settings', 'route' => 'account.password'],
+    ],
+
+    'student' => [
+        ['label' => 'Home', 'icon' => 'dashboard', 'route' => 'home'],
+        ['label' => 'Live classes', 'icon' => 'calendar', 'route' => 'my.classes'],
+        ['label' => 'Lessons', 'icon' => 'courses', 'route' => 'lessons.index'],
+        ['label' => 'Homework', 'icon' => 'workplans', 'route' => 'homework.index'],
+        ['label' => 'Exams', 'icon' => 'reports', 'route' => 'exams.index'],
+        ['label' => 'Results', 'icon' => 'teachers', 'route' => 'results'],
+        ['label' => 'AI helper', 'icon' => 'communication', 'route' => 'ai.index'],
+        ['label' => 'Chat', 'icon' => 'communication', 'route' => 'chat.index'],
+        ['label' => 'Announcements', 'icon' => 'events', 'route' => 'announcements.index'],
+        ['label' => 'Subscription & fees', 'icon' => 'finance', 'route' => 'my.subscribe'],
+        ['label' => 'Feedback', 'icon' => 'communication', 'route' => 'feedback.index'],
+        ['label' => 'Change password', 'icon' => 'settings', 'route' => 'account.password'],
+    ],
+
+    'icons' => [
+        'dashboard' => 'M3 13h8V3H3v10Zm0 8h8v-6H3v6Zm10 0h8V11h-8v10Zm0-18v6h8V3h-8Z',
+        'calendar' => 'M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Zm0 16H5V10h14v10ZM7 12h5v5H7v-5Z',
+        'courses' => 'M18 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2ZM6 4h5v8l-2.5-1.5L6 12V4Z',
+        'teachers' => 'M16 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-8 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm0 2c-2.3 0-7 1.2-7 3.5V19h14v-2.5C15 14.2 10.3 13 8 13Zm8 0c-.3 0-.6 0-1 .1 1.2.8 2 1.9 2 3.4V19h6v-2.5c0-2.3-4.7-3.5-7-3.5Z',
+        'staff' => 'M20 7h-5V4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v3H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2ZM9 12a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm3 6H6v-.8c0-1 2-1.5 3-1.5s3 .5 3 1.5v.8Zm1-9h-2V4h2v5Zm5 7.5h-4V15h4v1.5Zm0-3h-4V12h4v1.5Z',
+        'events' => 'M17 12h-5v5h5v-5ZM16 1v2H8V1H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-1V1h-2Zm3 18H5V8h14v11Z',
+        'department' => 'M12 7V3H2v18h20V7H12ZM6 19H4v-2h2v2Zm0-4H4v-2h2v2Zm0-4H4V9h2v2Zm0-4H4V5h2v2Zm4 12H8v-2h2v2Zm0-4H8v-2h2v2Zm0-4H8V9h2v2Zm0-4H8V5h2v2Zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10Zm-2-8h-2v2h2v-2Zm0 4h-2v2h2v-2Z',
+        'finance' => 'M11.8 10.9c-2.3-.6-3-1.2-3-2.2 0-1.1 1-1.8 2.7-1.8 1.8 0 2.4.8 2.5 2.1h2.2c-.1-1.7-1.1-3.3-3.2-3.8V3h-3v2.2c-1.9.4-3.5 1.7-3.5 3.6 0 2.3 1.9 3.5 4.7 4.1 2.5.6 3 1.5 3 2.4 0 .7-.5 1.8-2.7 1.8-2.1 0-2.9-.9-3-2.1H5.3c.1 2.2 1.8 3.4 3.7 3.8V21h3v-2.2c2-.4 3.5-1.5 3.5-3.5 0-2.9-2.4-3.8-4.7-4.4Z',
+        'students' => 'M12 3 1 9l11 6 9-4.9V17h2V9L12 3Zm-6 9.2V16c0 1.7 2.7 3 6 3s6-1.3 6-3v-3.8l-6 3.3-6-3.3Z',
+        'communication' => 'M20 2H4a2 2 0 0 0-2 2v18l4-4h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2ZM6 9h12v2H6V9Zm8 5H6v-2h8v2Zm4-6H6V6h12v2Z',
+        'logs' => 'M13 3a9 9 0 0 0-9 9H1l3.9 3.9L9 12H6a7 7 0 1 1 2.1 4.9l-1.4 1.4A9 9 0 1 0 13 3Zm-1 5v5l4.3 2.5.7-1.2-3.5-2.1V8H12Z',
+        'reports' => 'M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2ZM9 17H7v-7h2v7Zm4 0h-2V7h2v10Zm4 0h-2v-4h2v4Z',
+        'workplans' => 'M19 3h-4.2A3 3 0 0 0 12 1a3 3 0 0 0-2.8 2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2Zm-7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2Zm2 14H7v-2h7v2Zm3-4H7v-2h10v2Zm0-4H7V7h10v2Z',
+        'leave' => 'M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5Z',
+        'settings' => 'M19.1 12.9a7 7 0 0 0 0-1.9l2.1-1.6a.5.5 0 0 0 .1-.6l-1.9-3.3a.5.5 0 0 0-.6-.2l-2.4 1a7 7 0 0 0-1.6-.9L14.4 3a.5.5 0 0 0-.5-.4h-3.8a.5.5 0 0 0-.5.4l-.4 2.5a7 7 0 0 0-1.6.9l-2.4-1a.5.5 0 0 0-.6.2L2.7 8.9a.5.5 0 0 0 .1.6L4.9 11a7 7 0 0 0 0 1.9l-2.1 1.6a.5.5 0 0 0-.1.6l1.9 3.3c.1.2.4.3.6.2l2.4-1c.5.4 1 .7 1.6.9l.4 2.5c0 .3.2.4.5.4h3.8c.3 0 .5-.2.5-.4l.4-2.5a7 7 0 0 0 1.6-.9l2.4 1c.2.1.5 0 .6-.2l1.9-3.3a.5.5 0 0 0-.1-.6l-2.1-1.6ZM12 15.6a3.6 3.6 0 1 1 0-7.2 3.6 3.6 0 0 1 0 7.2Z',
+    ],
+];

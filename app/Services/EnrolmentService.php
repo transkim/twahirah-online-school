@@ -86,7 +86,7 @@ class EnrolmentService
         });
     }
 
-    protected function joinTeacherGroups(Enrolment $enrolment, User $teacher): void
+    public function joinTeacherGroups(Enrolment $enrolment, User $teacher): void
     {
         $course = $enrolment->course;
         $level = $enrolment->level;

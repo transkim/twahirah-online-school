@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\ClassBooking;
 use App\Models\ClassSession;
 use App\Models\Enrolment;
+use App\Models\LeaveRequest;
 use App\Models\TeacherAvailability;
 use App\Models\TeacherCourse;
 use App\Models\User;
@@ -52,7 +53,9 @@ class BookingService
             ]));
 
         // New classes in the hours teachers said they are free, where they have nothing booked yet.
-        $windows = TeacherAvailability::whereIn('teacher_id', $teacherIds)->where('weekday', $day->dayOfWeek)->get();
+        $onLeave = LeaveRequest::where('status', 'approved')->whereDate('from_date', '<=', $day->toDateString())
+            ->whereDate('to_date', '>=', $day->toDateString())->pluck('user_id');
+        $windows = TeacherAvailability::whereIn('teacher_id', $teacherIds->diff($onLeave))->where('weekday', $day->dayOfWeek)->get();
         foreach ($windows as $w) {
             $start = $day->copy()->setTimeFromTimeString($w->start_time);
             $end = $day->copy()->setTimeFromTimeString($w->end_time);
@@ -85,6 +88,10 @@ class BookingService
         return DB::transaction(function () use ($enrolment, $option, $student) {
             if ($option['class_session_id']) {
                 $session = ClassSession::whereKey($option['class_session_id'])->lockForUpdate()->firstOrFail();
+                if ($session->course_id !== $enrolment->course_id || $session->course_level_id !== $enrolment->course_level_id
+                    || $session->kind !== 'group' || $session->status !== 'scheduled' || $session->starts_at->lte(now())) {
+                    throw new RuntimeException('That class is not open to you. Please choose another time.');
+                }
                 if ($session->seatsLeft() < 1) {
                     throw new RuntimeException('That class is full. Please choose another time.');
                 }
@@ -118,6 +125,28 @@ class BookingService
                 ['class_session_id' => $session->id, 'student_id' => $student->id],
                 ['status' => 'booked'],
             );
+        });
+    }
+
+    /**
+     * A student cancels a booking. It must be at least the set number of hours before the class.
+     * A class nobody is booked in any more is cancelled too, so the teacher's time is free again.
+     */
+    public function cancel(ClassBooking $booking, ?Carbon $at = null): void
+    {
+        $at = $at ?? now();
+        $session = $booking->classSession;
+        $hours = config('school.change_booking_hours');
+
+        if ($booking->status !== 'booked' || $session->starts_at->copy()->subHours($hours)->lte($at)) {
+            throw new RuntimeException("Bookings can only be changed up to {$hours} hours before the class.");
+        }
+
+        DB::transaction(function () use ($booking, $session) {
+            $booking->update(['status' => 'cancelled']);
+            if ($session->bookings()->where('status', '!=', 'cancelled')->doesntExist()) {
+                $session->update(['status' => 'cancelled']);
+            }
         });
     }
 

@@ -12,9 +12,20 @@ class ClassSession extends Model
 
     protected $casts = ['starts_at' => 'datetime', 'ends_at' => 'datetime'];
 
-    public function teacher(): BelongsTo { return $this->belongsTo(User::class, 'teacher_id'); }
-    public function course(): BelongsTo { return $this->belongsTo(Course::class); }
-    public function bookings(): HasMany { return $this->hasMany(ClassBooking::class); }
+    public function teacher(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'teacher_id');
+    }
+
+    public function course(): BelongsTo
+    {
+        return $this->belongsTo(Course::class);
+    }
+
+    public function bookings(): HasMany
+    {
+        return $this->hasMany(ClassBooking::class);
+    }
 
     public function seatsLeft(): int
     {

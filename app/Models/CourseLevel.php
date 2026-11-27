@@ -10,5 +10,13 @@ class CourseLevel extends Model
 {
     protected $guarded = ['id'];
 
-    public function course(): BelongsTo { return $this->belongsTo(Course::class); }
+    public function course(): BelongsTo
+    {
+        return $this->belongsTo(Course::class);
+    }
+
+    public function topics(): HasMany
+    {
+        return $this->hasMany(Topic::class)->orderBy('position');
+    }
 }
