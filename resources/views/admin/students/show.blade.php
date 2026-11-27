@@ -3,6 +3,7 @@
 @section('content')
 @php $tz = config('school.timezone'); @endphp
 <h1>{{ $student->name }}</h1>
+<p><a class="btn light" href="{{ route('students.report-card', $student) }}">Report card</a></p>
 <p class="muted">{{ collect([$student->phone, $student->email, $student->country, $student->student_number])->filter()->join(' · ') }}</p>
 
 <div class="card">

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\Homework;
 use App\Models\HomeworkSubmission;
+use App\Models\Mark;
 use App\Notifications\SchoolNotice;
 use App\Services\LearningService;
 use Illuminate\Http\RedirectResponse;
@@ -95,6 +96,10 @@ class HomeworkController extends Controller
 
         $data = $request->validate(['mark' => ['required', 'integer', 'between:0,100'], 'feedback' => ['nullable', 'string', 'max:5000']]);
         $submission->update([...$data, 'marked_by' => $user->id, 'marked_at' => now()]);
+        Mark::updateOrCreate(['student_id' => $submission->student_id, 'homework_id' => $homework->id], [
+            'course_id' => $homework->course_id, 'kind' => 'homework', 'title' => $homework->title,
+            'score' => $data['mark'], 'given_on' => now()->toDateString(), 'recorded_by' => $user->id,
+        ]);
         $submission->student->notify(new SchoolNotice('Homework marked: '.$homework->title, "Mark {$data['mark']} out of 100", route('homework.show', $homework)));
 
         return back()->with('status', 'Mark saved and the student was told.');

@@ -17,6 +17,9 @@ return [
     // Students can change or cancel a booked live class until this many hours before it starts (to be confirmed by Sheikh).
     'change_booking_hours' => (int) env('SCHOOL_CHANGE_BOOKING_HOURS', 2),
 
+    // How much each kind of mark counts in a report card, in percent (to be confirmed by Sheikh).
+    'mark_weights' => ['exam' => 60, 'homework' => 20, 'assessment' => 20],
+
     // The old school portal, read once to bring its students and teachers across.
     'legacy_portal' => [
         'url' => env('LEGACY_PORTAL_URL', 'https://school.twahirahdbms.com'),

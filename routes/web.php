@@ -26,6 +26,8 @@ Route::middleware('guest')->group(function () {
     Route::post('/password/code/verify', [PasswordCodeController::class, 'update'])->name('password.code.update');
 });
 
+Route::get('/certificates/check/{code}', [Learning\ResultsController::class, 'verify'])->name('certificates.verify');
+
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
     Route::get('/home', HomeController::class)->name('home');
@@ -48,6 +50,26 @@ Route::middleware('auth')->group(function () {
     Route::post('/homework/{homework}/submit', [Learning\HomeworkController::class, 'submit'])->name('homework.submit');
     Route::post('/homework/submissions/{submission}/mark', [Learning\HomeworkController::class, 'mark'])->name('homework.mark');
     Route::get('/homework/submissions/{submission}/file', [Learning\HomeworkController::class, 'file'])->name('homework.file');
+
+    Route::get('/exams', [Learning\ExamController::class, 'index'])->name('exams.index');
+    Route::post('/exams', [Learning\ExamController::class, 'store'])->name('exams.store');
+    Route::get('/exams/{exam}', [Learning\ExamController::class, 'show'])->name('exams.show');
+    Route::put('/exams/{exam}', [Learning\ExamController::class, 'update'])->name('exams.update');
+    Route::post('/exams/{exam}/questions', [Learning\ExamController::class, 'addQuestion'])->name('exams.questions.store');
+    Route::delete('/exams/{exam}/questions/{question}', [Learning\ExamController::class, 'removeQuestion'])->name('exams.questions.destroy');
+    Route::post('/exams/{exam}/start', [Learning\ExamController::class, 'start'])->name('exams.start');
+    Route::get('/exam-attempts/{attempt}', [Learning\ExamController::class, 'attempt'])->name('exams.attempt');
+    Route::post('/exam-attempts/{attempt}', [Learning\ExamController::class, 'submit'])->name('exams.submit');
+    Route::post('/exam-attempts/{attempt}/mark', [Learning\ExamController::class, 'markWritten'])->name('exams.mark');
+    Route::get('/exam-attempts/{attempt}/answers/{answer}', [Learning\ExamController::class, 'answerFile'])->name('exams.answer.file');
+
+    Route::get('/results', [Learning\ResultsController::class, 'reportCard'])->name('results');
+    Route::get('/students/{student}/report-card', [Learning\ResultsController::class, 'reportCard'])->name('students.report-card');
+    Route::get('/certificates/{certificate}', [Learning\ResultsController::class, 'certificate'])->name('certificates.show');
+    Route::middleware('role:admin,finance,teacher')->group(function () {
+        Route::get('/marks', [Learning\ResultsController::class, 'marks'])->name('marks.index');
+        Route::post('/marks', [Learning\ResultsController::class, 'storeMarks'])->name('marks.store');
+    });
 
     Route::get('/chat', [Chat\ChatController::class, 'index'])->name('chat.index');
     Route::post('/chat', [Chat\ChatController::class, 'create'])->name('chat.create');
@@ -109,6 +131,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/payments/{payment}/reject', [Admin\PaymentController::class, 'reject'])->name('payments.reject');
 
         Route::get('/section/{slug}', Admin\SectionController::class)->name('section');
+
+        Route::get('/grading', [Learning\ResultsController::class, 'grading'])->name('grading');
+        Route::put('/grading', [Learning\ResultsController::class, 'updateGrading'])->name('grading.update')->middleware('role:admin');
 
         Route::get('/plans', [Admin\PlanController::class, 'index'])->name('plans.index');
         Route::put('/plans/{plan}', [Admin\PlanController::class, 'update'])->name('plans.update')->middleware('role:admin');
