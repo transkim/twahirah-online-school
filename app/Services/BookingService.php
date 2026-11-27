@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\ClassBooking;
 use App\Models\ClassSession;
 use App\Models\Enrolment;
+use App\Models\LeaveRequest;
 use App\Models\TeacherAvailability;
 use App\Models\TeacherCourse;
 use App\Models\User;
@@ -52,7 +53,9 @@ class BookingService
             ]));
 
         // New classes in the hours teachers said they are free, where they have nothing booked yet.
-        $windows = TeacherAvailability::whereIn('teacher_id', $teacherIds)->where('weekday', $day->dayOfWeek)->get();
+        $onLeave = LeaveRequest::where('status', 'approved')->whereDate('from_date', '<=', $day->toDateString())
+            ->whereDate('to_date', '>=', $day->toDateString())->pluck('user_id');
+        $windows = TeacherAvailability::whereIn('teacher_id', $teacherIds->diff($onLeave))->where('weekday', $day->dayOfWeek)->get();
         foreach ($windows as $w) {
             $start = $day->copy()->setTimeFromTimeString($w->start_time);
             $end = $day->copy()->setTimeFromTimeString($w->end_time);

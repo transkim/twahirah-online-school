@@ -11,3 +11,6 @@ Artisan::command('inspire', function () {
 
 // End subscriptions whose dates or sessions are used up.
 Schedule::call(fn () => app(SubscriptionService::class)->endExpired())->daily();
+
+// Remind students a few days before their plan ends.
+Schedule::command('school:renewal-reminders')->dailyAt('08:00')->timezone(config('school.timezone'));

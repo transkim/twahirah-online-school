@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Services\Payments\OfficePaymentGateway;
 use App\Services\Payments\PaymentGateway;
+use App\Services\SchoolSettings;
 use App\Services\Sms\LogSmsSender;
 use App\Services\Sms\SmsSender;
 use App\Services\Zoom\NullZoomClient;
@@ -25,8 +26,8 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-    public function boot(): void
+    public function boot(SchoolSettings $settings): void
     {
-        //
+        $settings->apply();
     }
 }

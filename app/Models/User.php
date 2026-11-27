@@ -96,6 +96,11 @@ class User extends Authenticatable
         return $this->hasMany(TeacherAvailability::class, 'teacher_id');
     }
 
+    public function leaveRequests(): HasMany
+    {
+        return $this->hasMany(LeaveRequest::class);
+    }
+
     public function chatGroups(): BelongsToMany
     {
         return $this->belongsToMany(ChatGroup::class, 'chat_group_members')->withPivot('role', 'muted', 'last_read_at')->withTimestamps();

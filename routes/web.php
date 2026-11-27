@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\PasswordCodeController;
 use App\Http\Controllers\Chat;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Learning;
+use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Student;
 use App\Http\Controllers\Teacher;
@@ -72,6 +73,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/students/{student}/report-card', [Learning\ResultsController::class, 'reportCard'])->name('students.report-card');
     Route::get('/certificates/{certificate}', [Learning\ResultsController::class, 'certificate'])->name('certificates.show');
     Route::middleware('role:admin,finance,teacher')->group(function () {
+        Route::get('/leave', [LeaveController::class, 'index'])->name('leave.index');
+        Route::post('/leave', [LeaveController::class, 'store'])->name('leave.store');
         Route::get('/marks', [Learning\ResultsController::class, 'marks'])->name('marks.index');
         Route::post('/marks', [Learning\ResultsController::class, 'storeMarks'])->name('marks.store');
     });
@@ -136,6 +139,27 @@ Route::middleware('auth')->group(function () {
         Route::post('/payments/{payment}/reject', [Admin\PaymentController::class, 'reject'])->name('payments.reject');
 
         Route::get('/section/{slug}', Admin\SectionController::class)->name('section');
+
+        Route::get('/calendar', Admin\CalendarController::class)->name('calendar');
+        Route::get('/events', [Admin\EventController::class, 'index'])->name('events.index');
+        Route::post('/events', [Admin\EventController::class, 'store'])->name('events.store');
+        Route::delete('/events/{event}', [Admin\EventController::class, 'destroy'])->name('events.destroy');
+        Route::post('/leave/{leave}', [LeaveController::class, 'decide'])->name('leave.decide')->withoutScopedBindings();
+
+        Route::get('/reports/balances', [Admin\ReportController::class, 'balances'])->name('reports.balances');
+        Route::get('/reports/cancelled', [Admin\ReportController::class, 'cancelled'])->name('reports.cancelled');
+        Route::get('/reports/insights', [Admin\ReportController::class, 'insights'])->name('reports.insights');
+        Route::get('/reports/teachers', [Admin\ReportController::class, 'teachers'])->name('reports.teachers');
+        Route::get('/reports/statement', [Admin\ReportController::class, 'statement'])->name('reports.statement');
+
+        Route::middleware('role:admin')->group(function () {
+            Route::get('/users', [Admin\UserController::class, 'index'])->name('users.index');
+            Route::post('/users', [Admin\UserController::class, 'store'])->name('users.store');
+            Route::put('/users/{user}', [Admin\UserController::class, 'update'])->name('users.update');
+            Route::get('/logs', Admin\LogController::class)->name('logs');
+            Route::get('/settings', [Admin\SettingsController::class, 'edit'])->name('settings');
+            Route::put('/settings', [Admin\SettingsController::class, 'update'])->name('settings.update');
+        });
 
         Route::get('/grading', [Learning\ResultsController::class, 'grading'])->name('grading');
         Route::put('/grading', [Learning\ResultsController::class, 'updateGrading'])->name('grading.update')->middleware('role:admin');

@@ -22,8 +22,11 @@ class Navigation
             default => config('navigation.student'),
         };
 
-        return array_map(function (array $item): array {
-            $children = array_map(fn (array $child): array => $this->link($child), $item['children'] ?? []);
+        // Some sections are for administrators only, so finance staff do not see them.
+        $allowed = fn (array $entry): bool => ! ($entry['admin_only'] ?? false) || $user->isAdmin();
+
+        return array_values(array_map(function (array $item) use ($allowed): array {
+            $children = array_map(fn (array $child): array => $this->link($child), array_values(array_filter($item['children'] ?? [], $allowed)));
             $link = isset($item['children']) ? ['url' => null, 'active' => false] : $this->link($item);
 
             return [
@@ -34,7 +37,7 @@ class Navigation
                 'badge' => isset($item['badge']) ? $this->badge($item['badge']) : null,
                 'children' => $children,
             ];
-        }, $items);
+        }, array_filter($items, $allowed)));
     }
 
     /**

@@ -18,4 +18,7 @@ php artisan view:cache
 php artisan migrate --force
 php artisan db:seed --force
 
+# Daily jobs: end used-up subscriptions and send renewal reminders.
+php artisan schedule:work > /dev/null 2>&1 &
+
 exec apache2-foreground
