@@ -63,6 +63,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/exam-attempts/{attempt}/mark', [Learning\ExamController::class, 'markWritten'])->name('exams.mark');
     Route::get('/exam-attempts/{attempt}/answers/{answer}', [Learning\ExamController::class, 'answerFile'])->name('exams.answer.file');
 
+    Route::middleware('role:student')->group(function () {
+        Route::get('/ai', [Learning\AiController::class, 'index'])->name('ai.index');
+        Route::post('/ai', [Learning\AiController::class, 'store'])->name('ai.store');
+    });
+
     Route::get('/results', [Learning\ResultsController::class, 'reportCard'])->name('results');
     Route::get('/students/{student}/report-card', [Learning\ResultsController::class, 'reportCard'])->name('students.report-card');
     Route::get('/certificates/{certificate}', [Learning\ResultsController::class, 'certificate'])->name('certificates.show');

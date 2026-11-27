@@ -153,6 +153,7 @@ return [
         ['label' => 'Homework', 'icon' => 'workplans', 'route' => 'homework.index'],
         ['label' => 'Exams', 'icon' => 'reports', 'route' => 'exams.index'],
         ['label' => 'Results', 'icon' => 'teachers', 'route' => 'results'],
+        ['label' => 'AI helper', 'icon' => 'communication', 'route' => 'ai.index'],
         ['label' => 'Chat', 'icon' => 'communication', 'route' => 'chat.index'],
         ['label' => 'Announcements', 'icon' => 'events', 'route' => 'announcements.index'],
         ['label' => 'Subscription & fees', 'icon' => 'finance', 'route' => 'my.subscribe'],
