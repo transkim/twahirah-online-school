@@ -2,6 +2,9 @@
 
 namespace App\Services;
 
+use App\Models\Account;
+use App\Models\FeeDiscount;
+use App\Models\LedgerEntry;
 use App\Models\Payment;
 use App\Models\Plan;
 use App\Models\Subscription;
@@ -23,12 +26,23 @@ class SubscriptionService
         return Payment::create([
             'student_id' => $student->id,
             'plan_id' => $plan->id,
-            'amount_ugx' => $plan->price_ugx,
+            'amount_ugx' => $this->priceFor($student, $plan),
             'method' => $method,
             'phone' => $phone,
             'reference' => 'TOS-'.strtoupper(Str::random(10)),
             'status' => 'pending',
         ]);
+    }
+
+    /**
+     * The plan price after the student's discount, if they have one. Rounded to whole hundreds
+     * so Mobile Money payments go through cleanly.
+     */
+    public function priceFor(User $student, Plan $plan): int
+    {
+        $percent = (int) FeeDiscount::where('student_id', $student->id)->current()->max('percent');
+
+        return $percent > 0 ? (int) (round($plan->price_ugx * (100 - min(100, $percent)) / 100 / 100) * 100) : $plan->price_ugx;
     }
 
     /** Called when MTN, Airtel or the card provider confirms the money arrived. Safe to call twice. */
@@ -46,6 +60,14 @@ class SubscriptionService
                 'paid_at' => $at ?? now(),
                 'provider_reference' => $providerReference,
             ]);
+
+            if ($account = Account::where('code', 'subscriptions')->first()) {
+                LedgerEntry::create([
+                    'account_id' => $account->id, 'amount_ugx' => $payment->amount_ugx, 'payment_id' => $payment->id,
+                    'student_id' => $payment->student_id, 'description' => 'Subscription: '.$payment->plan?->name,
+                    'entry_date' => ($at ?? now())->copy()->setTimezone(config('school.timezone'))->toDateString(),
+                ]);
+            }
 
             return $this->activate($payment->student, $payment->plan, $payment, null, $at);
         });

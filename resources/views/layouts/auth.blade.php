@@ -31,6 +31,7 @@
         .wrap svg.icon { position:absolute; left:14px; top:50%; transform:translateY(-50%); width:15px; height:15px; fill:var(--icon); pointer-events:none; }
         .wrap input { width:100%; height:48px; padding:0 46px 0 40px; font:inherit; font-size:14px; color:var(--ink); background:var(--field);
             border:1.5px solid var(--line); border-radius:8px; outline:none; transition:border-color .2s, box-shadow .2s, background .2s; }
+        .wrap select { width:100%; height:48px; padding:0 12px 0 40px; font:inherit; font-size:14px; color:var(--ink); background:var(--field); border:1.5px solid #dde3da; border-radius:10px; }
         .wrap input::placeholder { color:#9aa69a; }
         .wrap input:focus { border-color:var(--green); background:#fff; box-shadow:0 0 0 3px rgba(45, 140, 30, .12); }
         .eye { position:absolute; right:8px; top:50%; transform:translateY(-50%); width:34px; height:34px; border:0; background:none; cursor:pointer; border-radius:6px; display:grid; place-items:center; }

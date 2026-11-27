@@ -17,6 +17,10 @@ return [
     // Students can change or cancel a booked live class until this many hours before it starts (to be confirmed by Sheikh).
     'change_booking_hours' => (int) env('SCHOOL_CHANGE_BOOKING_HOURS', 2),
 
+    // One-off fees in UGX (to be confirmed by Sheikh).
+    'registration_fee_ugx' => (int) env('SCHOOL_REGISTRATION_FEE', 0),
+    'certificate_fee_ugx' => (int) env('SCHOOL_CERTIFICATE_FEE', 0),
+
     // Days before a subscription ends when students get a reminder by the app bell and SMS.
     'reminder_days' => (int) env('SCHOOL_REMINDER_DAYS', 3),
 

@@ -28,4 +28,5 @@
             </div>
             <button class="go">Sign In</button>
         </form>
+        <a class="back" href="{{ route('register') }}">New student? Sign up here</a>
 @endsection

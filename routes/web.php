@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin;
 use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordCodeController;
+use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Chat;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Learning;
@@ -12,6 +13,7 @@ use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Student;
 use App\Http\Controllers\Teacher;
+use App\Http\Controllers\TeacherOfficeController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/home');
@@ -25,6 +27,9 @@ Route::middleware('guest')->group(function () {
     Route::post('/password/code', [PasswordCodeController::class, 'store'])->name('password.code.send');
     Route::get('/password/code/verify', [PasswordCodeController::class, 'edit'])->name('password.code.verify');
     Route::post('/password/code/verify', [PasswordCodeController::class, 'update'])->name('password.code.update');
+
+    Route::get('/register', [RegisterController::class, 'create'])->name('register');
+    Route::post('/register', [RegisterController::class, 'store'])->name('register.store');
 });
 
 Route::get('/certificates/check/{code}', [Learning\ResultsController::class, 'verify'])->name('certificates.verify');
@@ -77,7 +82,15 @@ Route::middleware('auth')->group(function () {
         Route::post('/leave', [LeaveController::class, 'store'])->name('leave.store');
         Route::get('/marks', [Learning\ResultsController::class, 'marks'])->name('marks.index');
         Route::post('/marks', [Learning\ResultsController::class, 'storeMarks'])->name('marks.store');
+        Route::get('/requisitions', [Admin\FinanceController::class, 'requisitions'])->name('requisitions.index');
+        Route::post('/requisitions', [Admin\FinanceController::class, 'storeRequisition'])->name('requisitions.store');
+        Route::post('/requisitions/{requisition}', [Admin\FinanceController::class, 'decideRequisition'])->name('requisitions.decide');
+        Route::get('/work-plans', [TeacherOfficeController::class, 'workPlans'])->name('work-plans.index');
+        Route::post('/work-plans', [TeacherOfficeController::class, 'saveWorkPlan'])->name('work-plans.store');
     });
+
+    Route::get('/feedback', [TeacherOfficeController::class, 'feedback'])->name('feedback.index');
+    Route::post('/feedback', [TeacherOfficeController::class, 'storeFeedback'])->name('feedback.store');
 
     Route::get('/chat', [Chat\ChatController::class, 'index'])->name('chat.index');
     Route::post('/chat', [Chat\ChatController::class, 'create'])->name('chat.create');
@@ -166,5 +179,39 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/plans', [Admin\PlanController::class, 'index'])->name('plans.index');
         Route::put('/plans/{plan}', [Admin\PlanController::class, 'update'])->name('plans.update')->middleware('role:admin');
+
+        Route::get('/finance/accounts', [Admin\FinanceController::class, 'accounts'])->name('finance.accounts');
+        Route::post('/finance/accounts', [Admin\FinanceController::class, 'storeAccount'])->name('finance.accounts.store');
+        Route::post('/finance/entries', [Admin\FinanceController::class, 'storeEntry'])->name('finance.entries.store');
+        Route::get('/finance/daawah', [Admin\FinanceController::class, 'daawah'])->name('finance.daawah');
+        Route::get('/finance/statements', [Admin\FinanceController::class, 'statements'])->name('finance.statements');
+        Route::get('/finance/registration-fees', [Admin\FinanceController::class, 'fees'])->defaults('kind', 'registration')->name('finance.registration-fees');
+        Route::get('/finance/certificate-fees', [Admin\FinanceController::class, 'fees'])->defaults('kind', 'certificate')->name('finance.certificate-fees');
+        Route::post('/finance/fees/{kind}', [Admin\FinanceController::class, 'storeFee'])->whereIn('kind', ['registration', 'certificate'])->name('finance.fees.store');
+        Route::get('/finance/discounts', [Admin\FinanceController::class, 'discounts'])->name('finance.discounts');
+        Route::post('/finance/discounts', [Admin\FinanceController::class, 'storeDiscount'])->name('finance.discounts.store');
+        Route::delete('/finance/discounts/{discount}', [Admin\FinanceController::class, 'destroyDiscount'])->name('finance.discounts.destroy');
+
+        Route::get('/staff/members', [Admin\StaffController::class, 'members'])->name('staff.members');
+        Route::put('/staff/members/{user}', [Admin\StaffController::class, 'updateMember'])->name('staff.members.update')->middleware('role:admin');
+        Route::get('/staff/departments', [Admin\StaffController::class, 'departments'])->name('staff.departments');
+        Route::post('/staff/departments', [Admin\StaffController::class, 'storeDepartment'])->name('staff.departments.store')->middleware('role:admin');
+        Route::put('/staff/departments/{department}', [Admin\StaffController::class, 'updateDepartment'])->name('staff.departments.update')->middleware('role:admin');
+        Route::get('/staff/roles', [Admin\StaffController::class, 'roles'])->name('staff.roles');
+        Route::post('/work-plans/{plan}/comment', [TeacherOfficeController::class, 'commentWorkPlan'])->name('work-plans.comment');
+        Route::get('/appraisals', [TeacherOfficeController::class, 'appraisals'])->name('appraisals');
+        Route::post('/appraisals', [TeacherOfficeController::class, 'storeAppraisal'])->name('appraisals.store')->middleware('role:admin');
+
+        Route::get('/graduates', [Admin\StudentExtrasController::class, 'graduates'])->name('graduates');
+        Route::get('/self-registered', [Admin\StudentExtrasController::class, 'selfRegistered'])->name('self-registered');
+        Route::post('/self-registered/{student}', [Admin\StudentExtrasController::class, 'decideSelfRegistered'])->name('self-registered.decide');
+        Route::get('/free-numbers', [Admin\StudentExtrasController::class, 'freeNumbers'])->name('free-numbers');
+        Route::get('/levels', [Admin\StudentExtrasController::class, 'levels'])->name('levels');
+        Route::post('/courses/{course}/levels', [Admin\StudentExtrasController::class, 'storeLevel'])->name('levels.store')->middleware('role:admin');
+        Route::post('/levels/{level}/topics', [Admin\StudentExtrasController::class, 'storeTopic'])->name('topics.store');
+        Route::delete('/topics/{topic}', [Admin\StudentExtrasController::class, 'destroyTopic'])->name('topics.destroy');
+        Route::get('/student-levels', [Admin\StudentExtrasController::class, 'studentLevels'])->name('student-levels');
+        Route::post('/student-levels', [Admin\StudentExtrasController::class, 'promote'])->name('student-levels.promote');
+        Route::view('/automatic-messages', 'admin.automatic-messages')->name('automatic-messages');
     });
 });

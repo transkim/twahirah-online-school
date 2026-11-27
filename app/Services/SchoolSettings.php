@@ -22,6 +22,8 @@ class SchoolSettings
         'school.mark_weights.exam' => ['label' => 'Exams count in report cards (%)', 'help' => '', 'min' => 0, 'max' => 100],
         'school.mark_weights.homework' => ['label' => 'Homework counts in report cards (%)', 'help' => '', 'min' => 0, 'max' => 100],
         'school.mark_weights.assessment' => ['label' => 'Teacher assessments count in report cards (%)', 'help' => '', 'min' => 0, 'max' => 100],
+        'school.registration_fee_ugx' => ['label' => 'Registration fee (UGX)', 'help' => 'Paid once when a student joins.', 'min' => 0, 'max' => 10000000],
+        'school.certificate_fee_ugx' => ['label' => 'Certificate fee (UGX)', 'help' => '', 'min' => 0, 'max' => 10000000],
         'school.ai.daily_questions' => ['label' => 'AI helper questions per student per day', 'help' => '', 'min' => 0, 'max' => 500],
         'school.ai.monthly_tokens' => ['label' => 'AI helper tokens for the school per month', 'help' => 'About 1,000,000 tokens costs USD 4 to 20.', 'min' => 0, 'max' => 1000000000],
     ];
