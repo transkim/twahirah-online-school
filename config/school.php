@@ -14,6 +14,9 @@ return [
     'class_minutes' => (int) env('SCHOOL_CLASS_MINUTES', 60),
     'group_size' => (int) env('SCHOOL_GROUP_SIZE', 5), // to be confirmed by Sheikh
 
+    // Students can change or cancel a booked live class until this many hours before it starts (to be confirmed by Sheikh).
+    'change_booking_hours' => (int) env('SCHOOL_CHANGE_BOOKING_HOURS', 2),
+
     // The old school portal, read once to bring its students and teachers across.
     'legacy_portal' => [
         'url' => env('LEGACY_PORTAL_URL', 'https://school.twahirahdbms.com'),

@@ -1,9 +1,12 @@
 <?php
 
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordCodeController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Student;
+use App\Http\Controllers\Teacher;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/home');
@@ -22,6 +25,25 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
     Route::get('/home', HomeController::class)->name('home');
+    Route::get('/account/password', [AccountController::class, 'edit'])->name('account.password');
+    Route::put('/account/password', [AccountController::class, 'update'])->name('account.password.update');
+
+    Route::middleware('role:student')->prefix('my')->name('my.')->group(function () {
+        Route::get('/classes', [Student\ClassController::class, 'index'])->name('classes');
+        Route::post('/classes', [Student\ClassController::class, 'store'])->name('classes.store');
+        Route::delete('/classes/{booking}', [Student\ClassController::class, 'destroy'])->name('classes.destroy');
+        Route::post('/classes/{booking}/join', [Student\ClassController::class, 'join'])->name('classes.join');
+
+        Route::get('/subscription', [Student\SubscriptionController::class, 'index'])->name('subscribe');
+        Route::post('/subscription', [Student\SubscriptionController::class, 'store'])->name('subscribe.store');
+        Route::get('/payments/{payment}', [Student\SubscriptionController::class, 'show'])->name('payments.show');
+    });
+
+    Route::middleware('role:teacher')->prefix('teach')->name('teach.')->group(function () {
+        Route::get('/classes', [Teacher\ClassController::class, 'index'])->name('classes');
+        Route::post('/availability', [Teacher\ClassController::class, 'storeAvailability'])->name('availability.store');
+        Route::delete('/availability/{availability}', [Teacher\ClassController::class, 'destroyAvailability'])->name('availability.destroy');
+    });
 
     // Teachers can keep their own registers; admins and finance see everyone's.
     Route::middleware('role:admin,finance,teacher')->group(function () {
@@ -50,6 +72,10 @@ Route::middleware('auth')->group(function () {
         Route::delete('/teachers/{teacher}/availability/{availability}', [Admin\TeacherController::class, 'removeAvailability'])->name('teachers.availability.destroy');
 
         Route::get('/courses', [Admin\CourseController::class, 'index'])->name('courses.index');
+
+        Route::get('/payments', [Admin\PaymentController::class, 'index'])->name('payments.index');
+        Route::post('/payments/{payment}/confirm', [Admin\PaymentController::class, 'confirm'])->name('payments.confirm');
+        Route::post('/payments/{payment}/reject', [Admin\PaymentController::class, 'reject'])->name('payments.reject');
 
         Route::get('/section/{slug}', Admin\SectionController::class)->name('section');
 

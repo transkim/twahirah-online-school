@@ -120,8 +120,7 @@ return [
         ['label' => 'Reports', 'icon' => 'reports', 'children' => [
             ['label' => 'Fees Balances', 'slug' => 'fees-balances',
                 'about' => 'Every student who still owes, with old balances from the old portal.'],
-            ['label' => 'Collections', 'slug' => 'collections',
-                'about' => 'Money collected by day, week and month, by Mobile Money, card or cash.'],
+            ['label' => 'Collections', 'route' => 'admin.payments.index'],
             ['label' => 'Teachers', 'slug' => 'teacher-reports',
                 'about' => 'Classes, students and attendance for each teacher.'],
             ['label' => 'Account Statement', 'slug' => 'account-statement',
@@ -143,11 +142,16 @@ return [
      */
     'teacher' => [
         ['label' => 'Home', 'icon' => 'dashboard', 'route' => 'home'],
-        ['label' => 'Attendance', 'icon' => 'calendar', 'route' => 'admin.attendance'],
+        ['label' => 'Live classes', 'icon' => 'calendar', 'route' => 'teach.classes'],
+        ['label' => 'Attendance', 'icon' => 'students', 'route' => 'admin.attendance'],
+        ['label' => 'Change password', 'icon' => 'settings', 'route' => 'account.password'],
     ],
 
     'student' => [
         ['label' => 'Home', 'icon' => 'dashboard', 'route' => 'home'],
+        ['label' => 'Live classes', 'icon' => 'calendar', 'route' => 'my.classes'],
+        ['label' => 'Subscription & fees', 'icon' => 'finance', 'route' => 'my.subscribe'],
+        ['label' => 'Change password', 'icon' => 'settings', 'route' => 'account.password'],
     ],
 
     'icons' => [

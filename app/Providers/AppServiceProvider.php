@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Services\Payments\OfficePaymentGateway;
+use App\Services\Payments\PaymentGateway;
 use App\Services\Sms\LogSmsSender;
 use App\Services\Sms\SmsSender;
 use App\Services\Zoom\NullZoomClient;
@@ -17,6 +19,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->bind(ZoomClient::class, NullZoomClient::class);
         $this->app->bind(SmsSender::class, LogSmsSender::class);
+        $this->app->bind(PaymentGateway::class, OfficePaymentGateway::class);
     }
 
     /**

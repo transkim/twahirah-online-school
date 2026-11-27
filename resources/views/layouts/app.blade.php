@@ -128,7 +128,7 @@
         @endif
         <div class="who">
             <span class="bell" title="Notifications"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22a2 2 0 0 0 2-2h-4a2 2 0 0 0 2 2Zm6-6v-5c0-3.1-1.6-5.6-4.5-6.3V4a1.5 1.5 0 0 0-3 0v.7C7.6 5.4 6 7.9 6 11v5l-2 2v1h16v-1l-2-2Z"/></svg></span>
-            <span class="avatar" aria-hidden="true">{{ mb_strtoupper(mb_substr($me->name, 0, 1)) }}</span>
+            <a class="avatar" href="{{ route('account.password') }}" title="Change password">{{ mb_strtoupper(mb_substr($me->name, 0, 1)) }}</a>
             <span><b>{{ $me->name }}</b><small>{{ ['admin' => 'Administrator', 'finance' => 'Finance', 'teacher' => 'Teacher', 'student' => 'Student'][$me->role] ?? $me->role }}</small></span>
             <form method="post" action="{{ route('logout') }}">@csrf <button class="ghost">Sign out</button></form>
         </div>
