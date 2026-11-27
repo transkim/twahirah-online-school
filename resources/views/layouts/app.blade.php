@@ -28,6 +28,7 @@
         .avatar { width:38px; height:38px; border-radius:50%; display:grid; place-items:center; background:linear-gradient(135deg,#2d8c1e,#1a3d12); color:#fff; font-weight:700; }
         .bell { position:relative; width:38px; height:38px; border-radius:50%; display:grid; place-items:center; background:#f3f5f1; }
         .bell svg { width:18px; height:18px; fill:#4d5a48; }
+        .bell .dot { position:absolute; top:-3px; right:-3px; min-width:18px; padding:0 5px; border-radius:999px; background:#e8751a; color:#fff; font-size:10.5px; font-weight:700; line-height:18px; text-align:center; }
         button.ghost { white-space:nowrap; background:#fff; color:#1a3d12; border:1px solid #d6dbd2; box-shadow:none; min-height:34px; padding:5px 12px; }
         .burger { display:none; cursor:pointer; width:38px; height:38px; border-radius:8px; place-items:center; background:#f3f5f1; }
         .burger svg { width:20px; height:20px; fill:#1a3d12; }
@@ -54,7 +55,7 @@
         .titlebar .crumb { font-size:13px; font-weight:400; color:#c9d3dc; white-space:nowrap; } .titlebar .crumb b { color:#fff; font-weight:600; }
         @media (max-width: 900px) {
             .shell { grid-template-columns:minmax(0, 1fr); grid-template-areas:"top" "body"; }
-            .top { padding:0 12px; gap:10px; } .bell { display:none; } .logo img { height:34px; }
+            .top { padding:0 12px; gap:10px; } .logo img { height:34px; }
             .burger { display:grid; }
             .side { position:fixed; left:0; top:64px; bottom:0; width:280px; height:auto; z-index:40; transform:translateX(-100%); transition:transform .2s; box-shadow:8px 0 24px rgba(0,0,0,.25); }
             #menu-toggle:checked ~ .shell .side { transform:none; }
@@ -127,7 +128,8 @@
             </form>
         @endif
         <div class="who">
-            <span class="bell" title="Notifications"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22a2 2 0 0 0 2-2h-4a2 2 0 0 0 2 2Zm6-6v-5c0-3.1-1.6-5.6-4.5-6.3V4a1.5 1.5 0 0 0-3 0v.7C7.6 5.4 6 7.9 6 11v5l-2 2v1h16v-1l-2-2Z"/></svg></span>
+            @php $unread = $me->unreadNotifications()->count(); @endphp
+            <a class="bell" href="{{ route('notifications.index') }}" title="Notifications"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22a2 2 0 0 0 2-2h-4a2 2 0 0 0 2 2Zm6-6v-5c0-3.1-1.6-5.6-4.5-6.3V4a1.5 1.5 0 0 0-3 0v.7C7.6 5.4 6 7.9 6 11v5l-2 2v1h16v-1l-2-2Z"/></svg>@if ($unread)<span class="dot">{{ $unread > 99 ? '99+' : $unread }}</span>@endif</a>
             <a class="avatar" href="{{ route('account.password') }}" title="Change password">{{ mb_strtoupper(mb_substr($me->name, 0, 1)) }}</a>
             <span><b>{{ $me->name }}</b><small>{{ ['admin' => 'Administrator', 'finance' => 'Finance', 'teacher' => 'Teacher', 'student' => 'Student'][$me->role] ?? $me->role }}</small></span>
             <form method="post" action="{{ route('logout') }}">@csrf <button class="ghost">Sign out</button></form>

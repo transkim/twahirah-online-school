@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ClassBooking;
 use App\Models\Enrolment;
 use App\Models\User;
+use App\Notifications\SchoolNotice;
 use App\Services\AttendanceService;
 use App\Services\BookingService;
 use App\Services\SubscriptionService;
@@ -64,7 +65,7 @@ class ClassController extends Controller
         $enrolment = Enrolment::where('student_id', $request->user()->id)->where('status', 'active')->findOrFail($data['enrolment_id']);
 
         try {
-            $this->bookings->book($enrolment, [
+            $booking = $this->bookings->book($enrolment, [
                 'starts_at' => Carbon::parse($data['starts_at']),
                 'teacher_id' => (int) $data['teacher_id'],
                 'kind' => $data['kind'],
@@ -73,6 +74,10 @@ class ClassController extends Controller
         } catch (RuntimeException $e) {
             return back()->withErrors(['booking' => $e->getMessage()]);
         }
+
+        $session = $booking->classSession;
+        $session->teacher->notify(new SchoolNotice('New class booking', $request->user()->name.' booked '.$session->course->name.' on '
+            .$session->starts_at->timezone($session->teacher->timezone)->format('D j M, H:i'), route('teach.classes')));
 
         return redirect()->route('my.classes')->with('status', 'Your class is booked. You can join it here at class time.');
     }
