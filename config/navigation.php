@@ -103,9 +103,7 @@ return [
                 'about' => 'Student numbers that are not in use and can be given out again.'],
         ]],
         ['label' => 'Communication', 'icon' => 'communication', 'children' => [
-            ['label' => 'Chat & Groups', 'slug' => 'chat',
-                'about' => 'The school\'s own WhatsApp-style chat, replacing the WhatsApp classes.',
-                'features' => ['Class groups made automatically, with the teacher added', 'Text, voice notes and files', 'The office can see every group']],
+            ['label' => 'Chat & Groups', 'route' => 'chat.index'],
             ['label' => 'Announcements', 'slug' => 'announcements',
                 'about' => 'School-wide notices that reach every student\'s phone.'],
             ['label' => 'SMS Broadcasts', 'slug' => 'sms-broadcasts',
@@ -143,6 +141,7 @@ return [
     'teacher' => [
         ['label' => 'Home', 'icon' => 'dashboard', 'route' => 'home'],
         ['label' => 'Live classes', 'icon' => 'calendar', 'route' => 'teach.classes'],
+        ['label' => 'Chat', 'icon' => 'communication', 'route' => 'chat.index'],
         ['label' => 'Attendance', 'icon' => 'students', 'route' => 'admin.attendance'],
         ['label' => 'Change password', 'icon' => 'settings', 'route' => 'account.password'],
     ],
@@ -150,6 +149,7 @@ return [
     'student' => [
         ['label' => 'Home', 'icon' => 'dashboard', 'route' => 'home'],
         ['label' => 'Live classes', 'icon' => 'calendar', 'route' => 'my.classes'],
+        ['label' => 'Chat', 'icon' => 'communication', 'route' => 'chat.index'],
         ['label' => 'Subscription & fees', 'icon' => 'finance', 'route' => 'my.subscribe'],
         ['label' => 'Change password', 'icon' => 'settings', 'route' => 'account.password'],
     ],

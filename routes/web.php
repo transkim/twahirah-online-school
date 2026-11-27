@@ -4,6 +4,7 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordCodeController;
+use App\Http\Controllers\Chat;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Student;
 use App\Http\Controllers\Teacher;
@@ -27,6 +28,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/home', HomeController::class)->name('home');
     Route::get('/account/password', [AccountController::class, 'edit'])->name('account.password');
     Route::put('/account/password', [AccountController::class, 'update'])->name('account.password.update');
+
+    Route::get('/chat', [Chat\ChatController::class, 'index'])->name('chat.index');
+    Route::post('/chat', [Chat\ChatController::class, 'create'])->name('chat.create');
+    Route::get('/chat/{group}', [Chat\ChatController::class, 'show'])->name('chat.show');
+    Route::post('/chat/{group}/messages', [Chat\ChatController::class, 'store'])->name('chat.store');
+    Route::post('/chat/{group}/members', [Chat\ChatController::class, 'addMember'])->name('chat.members.store');
+    Route::post('/chat/{group}/members/{member}', [Chat\ChatController::class, 'updateMember'])->name('chat.members.update');
+    Route::get('/chat/messages/{message}/file', [Chat\ChatController::class, 'file'])->name('chat.file');
+    Route::post('/chat/messages/{message}/forward', [Chat\ChatController::class, 'forward'])->name('chat.forward');
+    Route::delete('/chat/messages/{message}', [Chat\ChatController::class, 'destroy'])->name('chat.destroy');
 
     Route::middleware('role:student')->prefix('my')->name('my.')->group(function () {
         Route::get('/classes', [Student\ClassController::class, 'index'])->name('classes');
